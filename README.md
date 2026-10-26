@@ -32,19 +32,13 @@ Skill 负责「测什么、期望是什么、失败算谁的」——是产品�
 
 > 需要带插件管理器的 DSH（Host bundle 支持）与 Node 22+；UI 测试还需要本机装有 Chrome 或 Edge。
 
-三选一：
+从 GitHub 安装（建议固定 tag 或 commit）：
 
 ```sh
-# npm（推荐）
-dsh plugin --profile web add dsh-plugin-big-fat-fish
+dsh plugin add github:Utaoki-henji/dsh-plugin-big-fat-fish#v0.1.1
 ```
 
-```sh
-# GitHub 源码（建议固定 commit）
-dsh plugin add github:Utaoki-henji/dsh-plugin-big-fat-fish#<commit>
-```
-
-**桌面端**：打开 **设置 → 插件 → 安装**，填 npm 包名 `dsh-plugin-big-fat-fish`（或上面的 GitHub spec），然后重启 Harness。
+**桌面端**：打开 **设置 → 插件 → 安装**，填上面的 spec（或 `https://github.com/Utaoki-henji/dsh-plugin-big-fat-fish`），然后重启 Harness。
 
 **离线 / 对话安装**：拿到发布包 `dsh-plugin-big-fat-fish-v<version>.zip`，让助手安装即可——发布包自带 `node_modules/playwright-core`，安装时不需要联网。
 
@@ -128,19 +122,13 @@ What it is good at:
 
 > Requires a DSH build with the plugin manager and Node 22+. UI tests additionally need local Chrome or Edge.
 
-Pick one:
+Install from GitHub (pin a tag or commit for reproducibility):
 
 ```sh
-# npm (recommended)
-dsh plugin --profile web add dsh-plugin-big-fat-fish
+dsh plugin add github:Utaoki-henji/dsh-plugin-big-fat-fish#v0.1.1
 ```
 
-```sh
-# GitHub source (pin a commit for reproducibility)
-dsh plugin add github:Utaoki-henji/dsh-plugin-big-fat-fish#<commit>
-```
-
-**Desktop app**: open **Settings → Plugins → Install**, and enter the npm package name `dsh-plugin-big-fat-fish` (or the GitHub spec above). Then restart the Harness.
+**Desktop app**: open **Settings → Plugins → Install**, and enter the spec above (or `https://github.com/Utaoki-henji/dsh-plugin-big-fat-fish`). Then restart the Harness.
 
 **Offline / conversation install**: download the release bundle (`dsh-plugin-big-fat-fish-v<version>.zip`) and ask the assistant to install it — the bundle ships its own `node_modules/playwright-core` and needs no network during install.
 
