@@ -103,6 +103,10 @@ const FT_HTTP_RUN_PARAMETERS = {
       properties: {
         stopOnFailure: { type: 'boolean' },
         saveResponseBody: { type: 'boolean' },
+        saveResponseBodyMaxBytes: {
+          type: 'number',
+          description: 'Cap for the saved response body in bytes (default 65536, clamped to request.maxResponseBytes). Bodies are redacted before saving; a longer body is cut and flagged bodyTruncated.',
+        },
         concurrency: { type: 'number', description: 'v1 supports only 1.' },
         retryOnError: { type: 'number', description: 'Retries for network/timeout errors only.' },
       },

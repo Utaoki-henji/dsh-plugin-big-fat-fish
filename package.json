@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-big-fat-fish",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Black-box functional testing for HTTP APIs and Vue/Web pages inside DeepSeek Harness: ft_http_run, ft_ui_run, ft_report plus the functional-testing skill.",
   "license": "MIT",
   "type": "module",
