@@ -5,13 +5,13 @@
   "license": "MIT",
   "type": "module",
   "author": "Big Fat Fish",
-  "homepage": "https://github.com/REPLACE_GITHUB_USER/dsh-plugin-big-fat-fish#readme",
+  "homepage": "https://github.com/Utaoki-henji/dsh-plugin-big-fat-fish#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/REPLACE_GITHUB_USER/dsh-plugin-big-fat-fish.git"
+    "url": "git+https://github.com/Utaoki-henji/dsh-plugin-big-fat-fish.git"
   },
   "bugs": {
-    "url": "https://github.com/REPLACE_GITHUB_USER/dsh-plugin-big-fat-fish/issues"
+    "url": "https://github.com/Utaoki-henji/dsh-plugin-big-fat-fish/issues"
   },
   "keywords": [
     "dsh-plugin",
