@@ -1,128 +1,25 @@
 # 测试工程师 大肥鱼 · Test Engineer Big Fat Fish
 
-**Black-box functional testing for DeepSeek Harness** — HTTP APIs, Vue/Web pages, and front-end/back-end consistency, driven by conversation.
+**面向 DeepSeek Harness 的黑盒功能测试插件**：接口、页面、前后端一致性，用对话驱动。
 
 [中文](#中文说明) · [English](#english)
 
 ---
 
-## What it is
-
-`dsh-plugin-big-fat-fish` is a DeepSeek Harness (DSH) Host bundle. It adds three executor tools and one methodology skill:
-
-| Kind | Name | What it does |
-| --- | --- | --- |
-| Tool | `ft_http_run` | Sends HTTP requests (suite of cases or inline cases), evaluates `status` / `jsonPath` / `headers` / `latencyMs` assertions, extracts variables, persists evidence |
-| Tool | `ft_ui_run` | Drives local Chrome/Edge via `playwright-core`: page flows, selectors, waits, assertions, screenshots, console and failed-request capture |
-| Tool | `ft_report` | Rebuilds a human-readable report from stored runs (single or aggregated, with known-failure marking) |
-| Skill | `functional-testing` | The methodology: requirements → interface/UI entry review → test-case design → data confirmation → execution → attribution → per-round record and report |
-
-The skill owns **what to test, what "expected" means, and whether a failure is a product bug, a test-case bug, or an environment problem**. The tools only execute and keep evidence — they never guess.
-
-What it is good at:
-
-- Acceptance/regression testing of a version or module through its **real interfaces and real pages** (no mocks, no source changes).
-- Reusing a **login profile** per project: after a login interface is probed once, every later round runs `login + feature` together.
-- Writing per-round records: goal, coverage, test data, anomaly reproduction — so a report can be reproduced by another person.
-- Front-end/back-end consistency checks: the same data read through the API and rendered on the page, compared field by field.
-
-## Installation
-
-> Requires a DSH build with the plugin manager and Node 22+. UI tests additionally need local Chrome or Edge.
-
-Pick one:
-
-```sh
-# npm (recommended)
-dsh plugin --profile web add dsh-plugin-big-fat-fish
-```
-
-```sh
-# GitHub source (pin a commit for reproducibility)
-dsh plugin add github:<owner>/dsh-plugin-big-fat-fish#<commit>
-```
-
-**Desktop app**: open **Settings → Plugins → Install**, and enter the npm package name `dsh-plugin-big-fat-fish` (or the GitHub spec above). Then restart the Harness.
-
-**Offline / conversation install**: download the release bundle (`dsh-plugin-big-fat-fish-v<version>.zip`) and ask the assistant to install it — the bundle ships its own `node_modules/playwright-core` and needs no network during install.
-
-After installing, the plugin appears as **测试工程师 大肥鱼** with the `functional-testing` skill.
-
-## Usage
-
-Start a conversation turn with one of:
-
-- 「开始测试」 / 「开始测试接口」 / 「开始测试页面」
-- "start testing", "test this API", "test this page"
-
-The skill then walks these steps, asking you for what it cannot know:
-
-1. **Confirm the project** (name / repository / service).
-2. **Choose the test kind**: interface only · UI only · module (API + UI + front-end/back-end consistency).
-3. **Give the entry**: API base URL and path (or Controller/API doc) or the UI route; environment and credential source.
-4. **Login profile**: if the interface needs a token, it reads `.ft/logins/<project>.json`; without a profile it asks you for the login interface rather than guessing a path.
-5. **Read the code** (read-only) to derive the contract and branch checklist — never modified, never instrumented.
-6. **Confirm execution logic** for multiple interfaces: sequential / branching / parallel, and the concrete order (it will not infer call chains from code structure).
-7. **Prepare test data** and show you a data-confirmation card before writing anything.
-8. **Execute**: 3–5 smoke cases first, then the full set; one run per topic.
-9. **Record and report**: per-round goal, coverage, test data, anomaly reproduction, plus a combined report.
-
-## Workspace state
-
-Everything the plugin keeps lives under `.ft/` in the current workspace (never in your project source):
-
-```text
-.ft/
-  config.json              # api/ui base URLs, allowed hosts, destructive rules, size limits
-  credentials.local.json   # local credential store (gitignored; env vars override it)
-  logins/<project>.json    # login profile: endpoint, token path, auth header, env var names
-  suites/                  # reusable test suites (credentials stay as ${env:...} placeholders)
-  runs/<runId>/            # results.jsonl, evidence, screenshots, report
-```
-
-`ensureWorkspaceState` writes a `.ft/.gitignore` so runs, credentials and auth artifacts never leak into your repository.
-
-## Requirements
-
-- DSH with plugin manager (Host bundle support).
-- Node.js 22+ (`node --test` era; the bundle is ESM).
-- Local Chrome or Edge for `ft_ui_run` (it drives your installed browser; no browser download required).
-- Network access to the targets you test.
-
-## Safety and privacy
-
-- **Read-only on your project**: the plugin never edits project source, never injects instrumentation, never runs your build.
-- **Writes are confined** to the workspace `.ft/` state directory.
-- **Secrets**: credentials come from environment variables or `.ft/credentials.local.json`. Logs, evidence and persisted suites redact secret keys (`authorization`, `cookie`, `password`, `token`, …) and keep `${env:...}` placeholders instead of values.
-- **No telemetry**: the tools talk only to the base URLs you provide.
-- **Destructive calls are opt-in**: non-GET calls must be marked `destructive: true` in the case and allowed by `.ft/config.json`.
-- UI automation launches an isolated browser context; it does not touch your everyday browser profile.
-
-## Scope and limitations
-
-- **Execution is black-box only**: HTTP requests plus real-browser UI flows. There is no unit-test execution, no code coverage, no breakpoints or instrumentation.
-- **White-box is static and read-only**: during step 5 the assistant may read Java/Spring controllers, DTOs, validation and service branches, or Vue routes and API layers, to derive expectations. Nothing is executed from that reading.
-- `concurrency` is fixed at 1; parallel requests run sequentially in the confirmed order.
-- `ft_ui_run` uses the local Chrome/Edge channel. Headless mode and login state (`storageState` / cookies) are supported.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
-
----
-
 ## 中文说明
-
-**面向 DeepSeek Harness 的黑盒功能测试插件**：接口、页面、前后端一致性，用对话驱动。
 
 ### 它是什么
 
-一个 DSH Host 组合包，注册 3 个执行工具 + 1 个方法论 skill：
+`dsh-plugin-big-fat-fish` 是一个 DeepSeek Harness（DSH）Host 组合包：注册 3 个执行工具 + 1 个方法论 skill。
 
-- `ft_http_run`：批量发 HTTP 请求，断言 `status` / `jsonPath` / `headers` / `latencyMs`，提取变量，落盘证据；
-- `ft_ui_run`：用 `playwright-core` 驱动本机 Chrome/Edge，跑页面流程、断言、截图、收集控制台报错与失败请求；
-- `ft_report`：从已落盘的 run 生成/汇总人读报告，支持标记已知失败；
-- `functional-testing` skill：负责「测什么、期望是什么、失败算谁的」——从代码/接口摸底，到用例设计、数据确认、执行、归因、每轮档案与报告。
+| 类型 | 名称 | 作用 |
+| --- | --- | --- |
+| 工具 | `ft_http_run` | 批量发 HTTP 请求（套件或内联用例），断言 `status` / `jsonPath` / `headers` / `latencyMs`，提取变量，落盘证据 |
+| 工具 | `ft_ui_run` | 用 `playwright-core` 驱动本机 Chrome/Edge：页面流程、选择器、等待、断言、截图、收集控制台报错与失败请求 |
+| 工具 | `ft_report` | 从已落盘的 run 重新生成人读报告（单个或汇总，支持标记已知失败） |
+| Skill | `functional-testing` | 方法论：需求 → 接口/UI 入口摸底 → 用例设计 → 数据确认 → 执行 → 归因 → 每轮档案与报告 |
+
+Skill 负责「测什么、期望是什么、失败算谁的」——是产品缺陷、用例缺陷还是环境问题；工具只负责执行和留证据，**不猜**。
 
 它擅长：
 
@@ -144,7 +41,7 @@ dsh plugin --profile web add dsh-plugin-big-fat-fish
 
 ```sh
 # GitHub 源码（建议固定 commit）
-dsh plugin add github:<owner>/dsh-plugin-big-fat-fish#<commit>
+dsh plugin add github:Utaoki-henji/dsh-plugin-big-fat-fish#<commit>
 ```
 
 **桌面端**：打开 **设置 → 插件 → 安装**，填 npm 包名 `dsh-plugin-big-fat-fish`（或上面的 GitHub spec），然后重启 Harness。
@@ -174,6 +71,13 @@ skill 会按顺序确认：项目 → 测试类型（接口 / 页面 / 模块）
 
 `ensureWorkspaceState` 会写入 `.ft/.gitignore`，避免 run、凭据、鉴权产物进入你的仓库。
 
+### 环境要求
+
+- 带插件管理器的 DSH（Host bundle 支持）；
+- Node.js 22+（ESM）；
+- `ft_ui_run` 需要本机 Chrome 或 Edge（直接驱动已装浏览器，不下载浏览器内核）；
+- 能访问你要测的目标地址。
+
 ### 安全与隐私
 
 - **对项目只读**：不改源码、不插桩、不跑你的构建；
@@ -193,3 +97,112 @@ skill 会按顺序确认：项目 → 测试类型（接口 / 页面 / 模块）
 ### 许可证
 
 MIT，见 [LICENSE](LICENSE)。
+
+---
+
+## English
+
+**Black-box functional testing for DeepSeek Harness** — HTTP APIs, Vue/Web pages, and front-end/back-end consistency, driven by conversation.
+
+### What it is
+
+`dsh-plugin-big-fat-fish` is a DSH Host bundle. It adds three executor tools and one methodology skill:
+
+| Kind | Name | What it does |
+| --- | --- | --- |
+| Tool | `ft_http_run` | Sends HTTP requests (suite of cases or inline cases), evaluates `status` / `jsonPath` / `headers` / `latencyMs` assertions, extracts variables, persists evidence |
+| Tool | `ft_ui_run` | Drives local Chrome/Edge via `playwright-core`: page flows, selectors, waits, assertions, screenshots, console and failed-request capture |
+| Tool | `ft_report` | Rebuilds a human-readable report from stored runs (single or aggregated, with known-failure marking) |
+| Skill | `functional-testing` | The methodology: requirements → interface/UI entry review → test-case design → data confirmation → execution → attribution → per-round record and report |
+
+The skill owns **what to test, what "expected" means, and whether a failure is a product bug, a test-case bug, or an environment problem**. The tools only execute and keep evidence — they never guess.
+
+What it is good at:
+
+- Acceptance/regression testing of a version or module through its **real interfaces and real pages** (no mocks, no source changes).
+- Reusing a **login profile** per project: after a login interface is probed once, every later round runs `login + feature` together.
+- Writing per-round records: goal, coverage, test data, anomaly reproduction — so a report can be reproduced by another person.
+- Front-end/back-end consistency checks: the same data read through the API and rendered on the page, compared field by field.
+
+### Installation
+
+> Requires a DSH build with the plugin manager and Node 22+. UI tests additionally need local Chrome or Edge.
+
+Pick one:
+
+```sh
+# npm (recommended)
+dsh plugin --profile web add dsh-plugin-big-fat-fish
+```
+
+```sh
+# GitHub source (pin a commit for reproducibility)
+dsh plugin add github:Utaoki-henji/dsh-plugin-big-fat-fish#<commit>
+```
+
+**Desktop app**: open **Settings → Plugins → Install**, and enter the npm package name `dsh-plugin-big-fat-fish` (or the GitHub spec above). Then restart the Harness.
+
+**Offline / conversation install**: download the release bundle (`dsh-plugin-big-fat-fish-v<version>.zip`) and ask the assistant to install it — the bundle ships its own `node_modules/playwright-core` and needs no network during install.
+
+After installing, the plugin appears as **测试工程师 大肥鱼** with the `functional-testing` skill.
+
+### Usage
+
+Start a conversation turn with one of:
+
+- 「开始测试」 / 「开始测试接口」 / 「开始测试页面」
+- "start testing", "test this API", "test this page"
+
+The skill then walks these steps, asking you for what it cannot know:
+
+1. **Confirm the project** (name / repository / service).
+2. **Choose the test kind**: interface only · UI only · module (API + UI + front-end/back-end consistency).
+3. **Give the entry**: API base URL and path (or Controller/API doc) or the UI route; environment and credential source.
+4. **Login profile**: if the interface needs a token, it reads `.ft/logins/<project>.json`; without a profile it asks you for the login interface rather than guessing a path.
+5. **Read the code** (read-only) to derive the contract and branch checklist — never modified, never instrumented.
+6. **Confirm execution logic** for multiple interfaces: sequential / branching / parallel, and the concrete order (it will not infer call chains from code structure).
+7. **Prepare test data** and show you a data-confirmation card before writing anything.
+8. **Execute**: 3–5 smoke cases first, then the full set; one run per topic.
+9. **Record and report**: per-round goal, coverage, test data, anomaly reproduction, plus a combined report.
+
+### Workspace state
+
+Everything the plugin keeps lives under `.ft/` in the current workspace (never in your project source):
+
+```text
+.ft/
+  config.json              # api/ui base URLs, allowed hosts, destructive rules, size limits
+  credentials.local.json   # local credential store (gitignored; env vars override it)
+  logins/<project>.json    # login profile: endpoint, token path, auth header, env var names
+  suites/                  # reusable test suites (credentials stay as ${env:...} placeholders)
+  runs/<runId>/            # results.jsonl, evidence, screenshots, report
+```
+
+`ensureWorkspaceState` writes a `.ft/.gitignore` so runs, credentials and auth artifacts never leak into your repository.
+
+### Requirements
+
+- DSH with plugin manager (Host bundle support).
+- Node.js 22+ (ESM).
+- Local Chrome or Edge for `ft_ui_run` (it drives your installed browser; no browser download required).
+- Network access to the targets you test.
+
+### Safety and privacy
+
+- **Read-only on your project**: the plugin never edits project source, never injects instrumentation, never runs your build.
+- **Writes are confined** to the workspace `.ft/` state directory.
+- **Secrets**: credentials come from environment variables or `.ft/credentials.local.json`. Logs, evidence and persisted suites redact secret keys (`authorization`, `cookie`, `password`, `token`, …) and keep `${env:...}` placeholders instead of values.
+- **No telemetry**: the tools talk only to the base URLs you provide.
+- **Destructive calls are opt-in**: non-GET calls must be marked `destructive: true` in the case and allowed by `.ft/config.json`.
+- UI automation launches an isolated browser context; it does not touch your everyday browser profile.
+
+### Scope and limitations
+
+- **Execution is black-box only**: HTTP requests plus real-browser UI flows. There is no unit-test execution, no code coverage, no breakpoints or instrumentation.
+- **White-box is static and read-only**: during step 5 the assistant may read Java/Spring controllers, DTOs, validation and service branches, or Vue routes and API layers, to derive expectations. Nothing is executed from that reading.
+- `concurrency` is fixed at 1; parallel requests run sequentially in the confirmed order.
+- `ft_ui_run` uses the local Chrome/Edge channel. Headless mode and login state (`storageState` / cookies) are supported.
+
+### License
+
+MIT — see [LICENSE](LICENSE).
