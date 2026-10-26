@@ -32,10 +32,10 @@ test('stored variables load from .ft/credentials.local.json', async () => {
   try {
     await writeFile(
       path.join(cwd, CREDENTIALS_FILE),
-      JSON.stringify({ schemaVersion: 1, variables: { FT_USERNAME: 'tester', FT_PASSWORD: 's3cret' } }),
+      JSON.stringify({ schemaVersion: 1, variables: { FT_USERNAME: 'tester', FT_PASSWORD: 'example-value' } }),
     )
     const store = await loadCredentialStore(cwd)
-    assert.deepEqual(store.variables, { FT_USERNAME: 'tester', FT_PASSWORD: 's3cret' })
+    assert.deepEqual(store.variables, { FT_USERNAME: 'tester', FT_PASSWORD: 'example-value' })
     assert.deepEqual(store.warnings, [])
   } finally {
     await rm(cwd, { recursive: true, force: true })

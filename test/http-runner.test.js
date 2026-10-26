@@ -208,7 +208,7 @@ test('login suite uses local credentials, extracts a token, and never leaks the 
     )
     await writeFile(
       path.join(cwd, '.ft', 'credentials.local.json'),
-      JSON.stringify({ schemaVersion: 1, variables: { FT_USERNAME: 'tester', FT_PASSWORD: 's3cret-pw' } }),
+      JSON.stringify({ schemaVersion: 1, variables: { FT_USERNAME: 'tester', FT_PASSWORD: 'example-password-value' } }),
     )
 
     const result = await runHttp({
@@ -244,19 +244,19 @@ test('login suite uses local credentials, extracts a token, and never leaks the 
     assert.equal(result.summary.total, 2)
     assert.equal(result.summary.passed, 2)
     // Credentials reached the server, and the extracted token reached the next case.
-    assert.deepEqual(loginBody, { username: 'tester', password: 's3cret-pw' })
+    assert.deepEqual(loginBody, { username: 'tester', password: 'example-password-value' })
     assert.equal(seenAuth, 'Bearer tok-1')
 
     const runDir = path.join(cwd, '.ft', 'runs', result.runId)
     const resultsText = await readFile(path.join(runDir, 'results.jsonl'), 'utf8')
-    assert.ok(!resultsText.includes('s3cret-pw'), 'password must not be persisted in results.jsonl')
+    assert.ok(!resultsText.includes('example-password-value'), 'password must not be persisted in results.jsonl')
     const records = resultsText.trim().split('\n').map((line) => JSON.parse(line))
     const loginRecord = records.find((record) => record.caseId === 'LOGIN-001')
     assert.equal(loginRecord.request.body.password, '[REDACTED]')
     assert.equal(loginRecord.extract.accessToken, '[REDACTED]')
 
     const suiteText = await readFile(path.join(runDir, 'suite.json'), 'utf8')
-    assert.ok(!suiteText.includes('s3cret-pw'), 'password must not be persisted in suite.json')
+    assert.ok(!suiteText.includes('example-password-value'), 'password must not be persisted in suite.json')
     assert.ok(suiteText.includes('${env:FT_PASSWORD}'))
 
     const gitignore = await readFile(path.join(cwd, '.ft', '.gitignore'), 'utf8')
