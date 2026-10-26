@@ -1,0 +1,50 @@
+{
+  "name": "dsh-plugin-big-fat-fish",
+  "version": "0.1.1",
+  "description": "Black-box functional testing for HTTP APIs and Vue/Web pages inside DeepSeek Harness: ft_http_run, ft_ui_run, ft_report plus the functional-testing skill.",
+  "license": "MIT",
+  "type": "module",
+  "author": "Big Fat Fish",
+  "homepage": "https://github.com/REPLACE_GITHUB_USER/dsh-plugin-big-fat-fish#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/REPLACE_GITHUB_USER/dsh-plugin-big-fat-fish.git"
+  },
+  "bugs": {
+    "url": "https://github.com/REPLACE_GITHUB_USER/dsh-plugin-big-fat-fish/issues"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh",
+    "functional-testing",
+    "api-testing",
+    "ui-testing",
+    "black-box",
+    "playwright"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "lib/**/*.js",
+    "skill/**/*.md",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "playwright-core": "^1.64.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

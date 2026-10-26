@@ -1,0 +1,9 @@
+node_modules/
+.ft/
+dist/
+releases/
+coverage/
+*.local.json
+*.log
+.DS_Store
+Thumbs.db
